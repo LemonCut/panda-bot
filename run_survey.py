@@ -1,5 +1,4 @@
 import sys
-import time
 from playwright.sync_api import sync_playwright, TimeoutError
 
 SLEEP_TIME = 0.5
