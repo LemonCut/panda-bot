@@ -27,61 +27,74 @@ def complete_panda_survey(survey_code, email):
             # time.sleep(0.5)
                         
             # Page 1
+            print("Page 1...")
             page.locator(".Opt5").click()
             page.locator("#NextButton").click()
             # time.sleep(0.5)
             
             question_text = page.locator("#textR000005").inner_text()
             if question_text == "Please select your visit type:":
+                print("Online Order...")
                 # Mode 1
                 # Page 2
+                print("Page 2...")
                 page.get_by_text("Online order pick-up").click()
                 page.locator("#NextButton").click()
                 # time.sleep(1)
                 
                 # Page 3
+                print("Page 3...")
                 page.get_by_text("Panda mobile app").click()
                 page.locator("#NextButton").click()
                 
                 # Page 4
+                print("Page 4...")
                 all_highly_satisfied = page.locator("td.Opt5")
                 for option in all_highly_satisfied.all():
                     option.click()
                 page.locator("#NextButton").click()
 
                 # Page 5
+                print("Page 5...")
                 all_highly_satisfied = page.locator("td.Opt5")
                 for option in all_highly_satisfied.all():
                     option.click()
                 page.locator("#NextButton").click()
                 
                 # Page 6
+                print("Page 6...")
                 page.get_by_text("Prior positive experience").click()
                 page.locator("#NextButton").click()
                 
                 # Page 7
+                print("Page 7...")
                 page.locator("td.Opt2").click()
                 page.locator("#NextButton").click()
                 
                 # Page 8
+                print("Page 8...")
                 all_highly_satisfied = page.locator("td.Opt5")
                 for option in all_highly_satisfied.all():
                     option.click()
                 page.locator("#NextButton").click()
                 
                 # Page 9
+                print("Page 9...")
                 page.locator("#S000077").fill("Service was exceptional. Food was delicious as always. Portion sizes were adequate, but could have been better.")
                 page.locator("#NextButton").click()
                 
                 # Page 10
+                print("Page 10...")
                 page.locator("td.Opt2").click()
                 page.locator("#NextButton").click()
                 
                 # Page 11
+                print("Page 11...")
                 page.locator("td.Opt4").click()
                 page.locator("#NextButton").click()
                 
                 # Page 12
+                print("Page 12...")
                 page.locator("#S000057").fill(email)
                 page.locator("#S000064").fill(email)
                 page.locator("#NextButton").click()
