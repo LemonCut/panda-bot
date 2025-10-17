@@ -9,7 +9,7 @@ def complete_panda_survey(survey_code, email):
         raise ValueError("Survey code must be exactly 24 characters long.")
     with sync_playwright() as p:
         # 1. Launch Browser
-        browser = p.chromium.launch(headless=True) # Use headless=False for local testing
+        browser = p.chromium.launch(headless=False) # Use headless=False for local testing
         page = browser.new_page()
 
         try:
@@ -90,7 +90,7 @@ def complete_panda_survey(survey_code, email):
                 
                 # Page 11
                 print("Page 11...")
-                page.locator("td.Opt4").click()
+                page.get_by_text("Four or more times").click()
                 page.locator("#NextButton").click()
                 
                 # Page 12
@@ -102,16 +102,6 @@ def complete_panda_survey(survey_code, email):
                 # Mode 2
                 pass
             
-
-            # --- THIS IS WHERE THE MAIN LOGIC WILL GO ---
-            # 3. Answer Survey Questions
-            # This part will require you to find the specific selectors
-            # for the "Highly Satisfied" options and "Next" buttons.
-
-            # 4. Enter Email
-            # Find the email input and submit button selectors.
-
-            # 5. Confirm and Finish
             print("Survey submitted successfully!")
             browser.close()
             return "SUCCESS"
