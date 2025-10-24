@@ -9,7 +9,7 @@ def complete_panda_survey(survey_code, email):
         raise ValueError("Survey code must be exactly 24 characters long.")
     with sync_playwright() as p:
         # 1. Launch Browser
-        browser = p.chromium.launch(headless=True) # Use headless=False for local testing
+        browser = p.chromium.launch(headless=False) # Use headless=False for local testing
         page = browser.new_page()
 
         try:
@@ -32,8 +32,7 @@ def complete_panda_survey(survey_code, email):
             page.locator("#NextButton").click()
             # time.sleep(0.5)
             
-            question_text = page.locator("#textR000005").inner_text()
-            if question_text == "Please select your visit type:":
+            if page.get_by_text("Please select your visit type:").is_visible():
                 print("Online Order...")
                 # Mode 1
                 # Page 2
@@ -46,71 +45,70 @@ def complete_panda_survey(survey_code, email):
                 print("Page 3...")
                 page.get_by_text("Panda mobile app").click()
                 page.locator("#NextButton").click()
+            # Page 4
+            print("Page 4...")
+            all_highly_satisfied = page.locator("td.Opt5")
+            for option in all_highly_satisfied.all():
+                option.click()
+            page.locator("#NextButton").click()
+            # Page 5
+            print("Page 5...")
+            all_highly_satisfied = page.locator("td.Opt5")
+            for option in all_highly_satisfied.all():
+                option.click()
+            page.locator("#NextButton").click()
+            
+            # Page 6
+            print("Page 6...")
+            page.get_by_text("Prior positive experience").click()
+            page.locator("#NextButton").click()
+            
+            # Page 7
+            print("Page 7...")
+            page.locator("td.Opt2").click()
+            page.locator("#NextButton").click()
+            
+            # Page 8
+            print("Page 8...")
+            all_highly_satisfied = page.locator("td.Opt5")
+            for option in all_highly_satisfied.all():
+                option.click()
+            page.locator("#NextButton").click()
+            
+            # Page 9
+            print("Page 9...")
+            page.locator("#S000077").fill("Service was exceptional. Food was delicious as always. Portion sizes were adequate, but could have been better.")
+            page.locator("#NextButton").click()
+            
+            # Page 10
+            print("Page 10...")
+            page.locator("td.Opt2").click()
+            page.locator("#NextButton").click()
+            
+            # Page 11
+            print("Page 11...")
+            page.get_by_text("Four or more times").click()
+            page.locator("#NextButton").click()
+            
+            # Page 12
+            print("Page 12...")
+            page.locator("#S000057").fill(email)
+            page.locator("#S000064").fill(email)
+            page.locator("#NextButton").click()
                 
-                # Page 4
-                print("Page 4...")
-                all_highly_satisfied = page.locator("td.Opt5")
-                for option in all_highly_satisfied.all():
-                    option.click()
-                page.locator("#NextButton").click()
-
-                # Page 5
-                print("Page 5...")
-                all_highly_satisfied = page.locator("td.Opt5")
-                for option in all_highly_satisfied.all():
-                    option.click()
-                page.locator("#NextButton").click()
-                
-                # Page 6
-                print("Page 6...")
-                page.get_by_text("Prior positive experience").click()
-                page.locator("#NextButton").click()
-                
-                # Page 7
-                print("Page 7...")
-                page.locator("td.Opt2").click()
-                page.locator("#NextButton").click()
-                
-                # Page 8
-                print("Page 8...")
-                all_highly_satisfied = page.locator("td.Opt5")
-                for option in all_highly_satisfied.all():
-                    option.click()
-                page.locator("#NextButton").click()
-                
-                # Page 9
-                print("Page 9...")
-                page.locator("#S000077").fill("Service was exceptional. Food was delicious as always. Portion sizes were adequate, but could have been better.")
-                page.locator("#NextButton").click()
-                
-                # Page 10
-                print("Page 10...")
-                page.locator("td.Opt2").click()
-                page.locator("#NextButton").click()
-                
-                # Page 11
-                print("Page 11...")
-                page.get_by_text("Four or more times").click()
-                page.locator("#NextButton").click()
-                
-                # Page 12
-                print("Page 12...")
-                page.locator("#S000057").fill(email)
-                page.locator("#S000064").fill(email)
-                page.locator("#NextButton").click()
-            else:
-                # Mode 2
-                pass
             
             print("Survey submitted successfully!")
+            input()
             browser.close()
             return "SUCCESS"
 
         except TimeoutError:
+            input()
             print("Error: A page element took too long to load.")
             browser.close()
             return "ERROR: Page timeout"
         except Exception as e:
+            input()
             print(f"An unexpected error occurred: {e}")
             browser.close()
             return f"ERROR: {e}"
