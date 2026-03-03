@@ -46,12 +46,9 @@ async def run_panda_survey(message, survey_code, email):
                 f":white_check_mark: **Success!** The survey is complete for `{email}`. The code has been sent."
             )
         else:
-            # It failed! Decode the error to analyze it.
             stderr_decoded = stderr.decode()
             print(f"Script Error: {stderr_decoded}") # Log error to your terminal
 
-            # --- THIS IS THE MODIFIED PART ---
-            # Check for our specific, known error first.
             if "Survey code must be exactly 24 characters long" in stderr_decoded:
                 await message.channel.send(
                     f":warning: **Invalid Code!** The survey code you provided is not the correct length. Please make sure it's 24 digits and try again."
@@ -81,14 +78,18 @@ async def on_message(message):
     if message.content.startswith('!panda'):
         parts = message.content.split()
 
-        if len(parts) != 3:
+        if len(parts) not in [2,3]:
             await message.channel.send(
                 ":panda_face: Oops! Wrong format. Please use:\n`!panda <survey_code> <email>`"
             )
             return
 
         survey_code = parts[1]
-        email = parts[2]
+        try:
+            email = parts[2]
+        except:
+            # Default to my email
+            email = "chrisohsee@gmail.com"
         
         asyncio.create_task(run_panda_survey(message, survey_code, email))
         return
