@@ -4,9 +4,14 @@ from playwright.sync_api import sync_playwright, TimeoutError
 SLEEP_TIME = 0.5
 
 def complete_panda_survey(survey_code, email):
-    survey_code = survey_code.replace('-', '')
-    if len(survey_code) != 24:
-        raise ValueError("Survey code must be exactly 24 characters long.")
+    survey_code_formatted = survey_code.replace('-', '')
+    if len(survey_code_formatted) < 24:
+        raise ValueError("Survey code must be at least 24 characters long.")
+
+    if ('-' not in survey_code) and len(survey_code) == 25:
+        # Add dashes after first 4, 9, 13, 17, and 21 characters (e.g., 1234-56789-0123-4567-8901-2345)
+        survey_code_formatted = survey_code[:4] + '-' + survey_code[4:9] + '-' + survey_code[9:13] + '-' + survey_code[13:17] + '-' + survey_code[17:21] + '-' + survey_code[21:24]
+    
     with sync_playwright() as p:
         # 1. Launch Browser
         browser = p.chromium.launch(headless=True) # Use headless=False for local testing
@@ -15,14 +20,14 @@ def complete_panda_survey(survey_code, email):
         try:
             # 2. Navigate and Enter Code
             print("Navigating to survey website...")
-            page.goto("https://www.pandaguestexperience.com/")
+            page.goto(f"https://www.pandaguestexperience.com/?cn={survey_code_formatted}&source=QR25")
             
-            print(f"Entering survey code: {survey_code}")
+            print(f"Entering survey code: {survey_code_formatted}")
             
-            # Split survey_code into 6 chunks of 4 digits each
-            chunks = [survey_code[i:i+4] for i in range(0, 24, 4)]
-            for idx, chunk in enumerate(chunks, start=1):
-                page.locator(f"#CN{idx}").fill(chunk)
+            # # Split survey_code into 6 chunks of 4 digits each
+            # chunks = [survey_code[i:i+4] for i in range(0, 24, 4)]
+            # for idx, chunk in enumerate(chunks, start=1):
+            #     page.locator(f"#CN{idx}").fill(chunk)
             page.locator("#NextButton").click()
             # time.sleep(0.5)
                         
@@ -32,6 +37,11 @@ def complete_panda_survey(survey_code, email):
             page.locator("#NextButton").click()
             # time.sleep(0.5)
             
+            if page.get_by_text("Thank you for your interest in taking our survey").is_visible():
+                print("Code is expired.")
+                browser.close()
+                return "EXPIRED"
+
             if page.get_by_text("Please select your visit type:").is_visible():
                 print("Online Order...")
                 # Mode 1
@@ -45,6 +55,7 @@ def complete_panda_survey(survey_code, email):
                 print("Page 3...")
                 page.get_by_text("Panda mobile app").click()
                 page.locator("#NextButton").click()
+            
             # Page 4
             print("Page 4...")
             all_highly_satisfied = page.locator("td.Opt5")

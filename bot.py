@@ -91,6 +91,9 @@ async def on_message(message):
             # Default to my email
             email = "chrisohsee@gmail.com"
         
+        if 'www' in survey_code:
+            survey_code = survey_code.split('www.pandaguestexperience.com/?cn=')[-1].split('&source=QR25')[0]
+
         asyncio.create_task(run_panda_survey(message, survey_code, email))
         return
 
