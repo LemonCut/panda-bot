@@ -10,12 +10,12 @@ def debug_pause(message):
 
 def complete_panda_survey(survey_code, email):
     survey_code_formatted = survey_code.replace('-', '')
-    if len(survey_code_formatted) < 24:
-        raise ValueError("Survey code must be at least 24 characters long.")
+    if len(survey_code_formatted) != 25:
+        raise ValueError("Survey code must be 25 characters long.")
 
-    if ('-' not in survey_code_formatted) and len(survey_code_formatted) == 25:
+    # if ('-' not in survey_code_formatted) and len(survey_code_formatted) == 25:
         # Add dashes after first 4, 9, 13, 17, and 21 characters (e.g., 1234-56789-0123-4567-8901-2345)
-        survey_code_formatted = survey_code_formatted[:4] + '-' + survey_code_formatted[4:9] + '-' + survey_code_formatted[9:13] + '-' + survey_code_formatted[13:17] + '-' + survey_code_formatted[17:21] + '-' + survey_code_formatted[21:25]
+        # survey_code_formatted = survey_code_formatted[:4] + '-' + survey_code_formatted[4:9] + '-' + survey_code_formatted[9:13] + '-' + survey_code_formatted[13:17] + '-' + survey_code_formatted[17:21] + '-' + survey_code_formatted[21:25]
     
     with sync_playwright() as p:
         # 1. Launch Browser
@@ -26,16 +26,22 @@ def complete_panda_survey(survey_code, email):
         try:
             # 2. Navigate and Enter Code
             print("Navigating to survey website...")
-            page.goto(f"https://www.pandaguestexperience.com/?cn={survey_code_formatted}&source=QR25")
+            page.goto(f"https://www.pandaguestexperience.com/")
             
             print(f"Entering survey code: {survey_code_formatted}")
             
             debug_pause("Code entered. Press Enter to continue...") # Debugging pause
 
-            # # Split survey_code into 6 chunks of 4 digits each
-            # chunks = [survey_code[i:i+4] for i in range(0, 24, 4)]
-            # for idx, chunk in enumerate(chunks, start=1):
-            #     page.locator(f"#CN{idx}").fill(chunk)
+            # Split survey_code into 6 chunks of 4 digits each (except second chunk which has 5 digits) and fill the form
+            chunks = [None] * 6
+            chunks[0] = survey_code_formatted[0:4] # First chunk is always 4 digits
+            chunks[1] = survey_code_formatted[4:9] # Adjust second chunk to have 5 digits
+            chunks[2] = survey_code_formatted[9:13] # Adjust third chunk to have 4 digits
+            chunks[3] = survey_code_formatted[13:17] # Adjust fourth chunk to have 4 digits
+            chunks[4] = survey_code_formatted[17:21] # Adjust fifth chunk to have 4 digits
+            chunks[5] = survey_code_formatted[21:25] # Adjust sixth chunk to have 4 digits
+            for idx, chunk in enumerate(chunks, start=1):
+                page.locator(f"#CN{idx}").fill(chunk)
             page.locator("#NextButton").click()
             # time.sleep(0.5)
                         
